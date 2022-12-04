@@ -9,6 +9,9 @@ import androidx.appcompat.app.AlertDialog
 import com.example.localdatabase.databinding.ActivityAddNewHomeworkBinding
 import com.example.localdatabase.db.DatabaseContract
 import com.example.localdatabase.db.HomeworkHelper
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -20,6 +23,11 @@ class AddNewHomework : AppCompatActivity() {
 
     private lateinit var binding: ActivityAddNewHomeworkBinding
 
+    private lateinit var database: DatabaseReference
+
+    private var homeworkTitle: String? = null
+    private var homeworkDescription: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddNewHomeworkBinding.inflate(layoutInflater)
@@ -29,12 +37,19 @@ class AddNewHomework : AppCompatActivity() {
         homeworkHelper.open()
 
         // Cek apakah ada data homework
-        homework = intent.getParcelableExtra(EXTRA_HOMEWORK)
-        if (homework != null) {
-            position = intent.getIntExtra(EXTRA_POSITION, 0)
+//        homework = intent.getParcelableExtra(EXTRA_HOMEWORK)
+//        if (homework != null) {
+//            position = intent.getIntExtra(EXTRA_POSITION, 0)
+//            isEdit = true
+//        } else {
+//            homework = Homework()
+//        }
+
+        // CEK ada judul ato ga
+        homeworkTitle = intent.getStringExtra(EXTRA_HOMEWORK_TITLE)
+        if (homeworkTitle != null) {
             isEdit = true
-        } else {
-            homework = Homework()
+            homeworkDescription = intent.getStringExtra(EXTRA_HOMEWORK_DESCRIPTION)
         }
 
         val actionBarTitle: String
@@ -45,10 +60,12 @@ class AddNewHomework : AppCompatActivity() {
             actionBarTitle = "Ubah"
             btnTitle = "Update"
 
-            homework?.let {
-                binding.edtTitle.setText(it.title)
-                binding.edtDescription.setText(it.description)
-            }
+            binding.edtTitle.setText(homeworkTitle)
+            binding.edtDescription.setText(homeworkDescription)
+//            homework?.let {
+//                binding.edtTitle.setText(it.title)
+//                binding.edtDescription.setText(it.description)
+//            }
 
         } else {
             actionBarTitle = "Tambah"
@@ -60,9 +77,44 @@ class AddNewHomework : AppCompatActivity() {
 
         binding.btnSubmit.text = btnTitle
 
-        binding.btnSubmit.setOnClickListener { addNewHomework() }
+//        binding.btnSubmit.setOnClickListener { addNewHomework() }
+        binding.btnSubmit.setOnClickListener { addNewHomeworkFirebase() }
 
-        binding.btnDelete.setOnClickListener { showAlertDialog(ALERT_DIALOG_DELETE) }
+//        binding.btnDelete.setOnClickListener { showAlertDialog(ALERT_DIALOG_DELETE) }
+        binding.btnDelete.setOnClickListener { delete() }
+    }
+
+    fun delete() {
+        database = Firebase.database.reference
+        val title = binding.edtTitle.text.toString().trim()
+        database.child("homework").child(title).removeValue()
+
+        Toast.makeText(this, "Data firebase berhasil dihapus", Toast.LENGTH_SHORT).show()
+        finish()
+
+    }
+
+    fun addNewHomeworkFirebase() {
+        database = Firebase.database.reference
+
+        val id = 0
+        val title = binding.edtTitle.text.toString().trim()
+        val description = binding.edtDescription.text.toString().trim()
+
+        if (isEdit) {
+            database.child("homework").child(title).child("description").setValue(description)
+            Toast.makeText(this, "Data firebase berhasil diperbaharui", Toast.LENGTH_SHORT).show()
+            finish()
+        }
+        else {
+            val date = getCurrentDate()
+            val homework = Homework(id, title, description, date)
+
+            database.child("homework").child(title).setValue(homework)
+            Toast.makeText(this, "Data firebase berhasil ditambahkan", Toast.LENGTH_SHORT).show()
+            finish()
+        }
+
     }
 
     fun addNewHomework() {
@@ -108,9 +160,7 @@ class AddNewHomework : AppCompatActivity() {
             }
         }
     }
-
-
-
+    
     private fun getCurrentDate(): String {
         val dateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault())
         val date = Date()
@@ -169,5 +219,8 @@ class AddNewHomework : AppCompatActivity() {
         const val RESULT_DELETE = 301
         const val ALERT_DIALOG_CLOSE = 10
         const val ALERT_DIALOG_DELETE = 20
+
+        const val EXTRA_HOMEWORK_TITLE = "extra_homework_title"
+        const val EXTRA_HOMEWORK_DESCRIPTION = "extra_homework_title_description"
     }
 }
