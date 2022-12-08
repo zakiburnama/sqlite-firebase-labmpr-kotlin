@@ -15,7 +15,7 @@ import com.google.firebase.ktx.Firebase
 import java.text.SimpleDateFormat
 import java.util.*
 
-class AddNewHomework : AppCompatActivity() {
+class AddNewHomeworkActivity : AppCompatActivity() {
     private var isEdit = false
     private var homework: Homework? = null
     private var position: Int = 0

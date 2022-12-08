@@ -25,28 +25,28 @@ class MainActivity : AppCompatActivity() {
     ) { result ->
         if (result.data != null) {
             when (result.resultCode) {
-                AddNewHomework.RESULT_ADD -> {
+                AddNewHomeworkActivity.RESULT_ADD -> {
                     val homework =
-                        result.data?.getParcelableExtra<Homework>(AddNewHomework.
+                        result.data?.getParcelableExtra<Homework>(AddNewHomeworkActivity.
                         EXTRA_HOMEWORK) as Homework
                     adapter.addItem(homework)
                     binding.rvHomework.smoothScrollToPosition(adapter.itemCount - 1)
                     showSnackbarMessage("Data berhasil ditambahkan")
                 }
-                AddNewHomework.RESULT_UPDATE -> {
+                AddNewHomeworkActivity.RESULT_UPDATE -> {
                     val homework =
-                        result.data?.getParcelableExtra<Homework>(AddNewHomework.
+                        result.data?.getParcelableExtra<Homework>(AddNewHomeworkActivity.
                         EXTRA_HOMEWORK) as Homework
                     val position =
-                        result?.data?.getIntExtra(AddNewHomework.EXTRA_POSITION, 0)
+                        result?.data?.getIntExtra(AddNewHomeworkActivity.EXTRA_POSITION, 0)
                                 as Int
                     adapter.updateItem(position, homework)
                     binding.rvHomework.smoothScrollToPosition(position)
                     showSnackbarMessage("Data berhasil diubah")
                 }
-                AddNewHomework.RESULT_DELETE -> {
+                AddNewHomeworkActivity.RESULT_DELETE -> {
                     val position =
-                        result?.data?.getIntExtra(AddNewHomework.EXTRA_POSITION, 0)
+                        result?.data?.getIntExtra(AddNewHomeworkActivity.EXTRA_POSITION, 0)
                                 as Int
                     adapter.removeItem(position)
                     showSnackbarMessage("Data berhasil dihapus")
@@ -67,16 +67,16 @@ class MainActivity : AppCompatActivity() {
         adapter = HomeworkAdapter(object : HomeworkAdapter.OnItemClickCallback {
             override fun onItemClicked(selectedHomework: Homework?, position: Int?) {
                 val intent =
-                    Intent(this@MainActivity, AddNewHomework::class.java)
-                intent.putExtra(AddNewHomework.EXTRA_HOMEWORK, selectedHomework)
-                intent.putExtra(AddNewHomework.EXTRA_POSITION, position)
+                    Intent(this@MainActivity, AddNewHomeworkActivity::class.java)
+                intent.putExtra(AddNewHomeworkActivity.EXTRA_HOMEWORK, selectedHomework)
+                intent.putExtra(AddNewHomeworkActivity.EXTRA_POSITION, position)
                 resultLauncher.launch(intent)
             }
         })
         binding.rvHomework.adapter = adapter
 
         binding.fabAdd.setOnClickListener {
-            val intent = Intent(this, AddNewHomework::class.java)
+            val intent = Intent(this, AddNewHomeworkActivity::class.java)
             resultLauncher.launch(intent)
         }
 

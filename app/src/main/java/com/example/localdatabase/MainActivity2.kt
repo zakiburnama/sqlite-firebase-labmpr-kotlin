@@ -3,7 +3,6 @@ package com.example.localdatabase
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
@@ -14,7 +13,6 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
-import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 
 class MainActivity2 : AppCompatActivity() {
@@ -35,7 +33,7 @@ class MainActivity2 : AppCompatActivity() {
         database = Firebase.database.reference.child("homework")
 
         binding.fabAdd.setOnClickListener {
-            val intent = Intent(this, AddNewHomework::class.java)
+            val intent = Intent(this, AddNewHomeworkActivity::class.java)
             startActivity(intent)
         }
 
@@ -79,9 +77,9 @@ class MainActivity2 : AppCompatActivity() {
         adapter.setOnItemClickCallback(object : HomeworkAdapter2.OnItemClickCallback {
             override fun onItemClicked(data: Homework) {
                 val intent = Intent(this@MainActivity2,
-                    AddNewHomework::class.java)
-                intent.putExtra(AddNewHomework.EXTRA_HOMEWORK_TITLE, data.title)
-                intent.putExtra(AddNewHomework.EXTRA_HOMEWORK_DESCRIPTION, data.description)
+                    AddNewHomeworkActivity::class.java)
+                intent.putExtra(AddNewHomeworkActivity.EXTRA_HOMEWORK_TITLE, data.title)
+                intent.putExtra(AddNewHomeworkActivity.EXTRA_HOMEWORK_DESCRIPTION, data.description)
                 startActivity(intent)
                 Toast.makeText(this@MainActivity2, "INI ANIME ${data.title}", Toast.LENGTH_SHORT).show()
             }
